@@ -26,13 +26,13 @@ public class UserPostgresRepository implements IUserRepository {
 	private String dbUrl = System.getenv().get("JDBC_DATABASE_URL");;
 
 	@Autowired
-	private DataSource dataSource;
+	private DataSource userdataSource;
 
 	@Override
 	public User getUserByUserName(String userName) {
 		String query = "SELECT  * FROM users where name=" + userName + ";";
 		User user = new User();
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = userdataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			user.setName(rs.getString("name"));
@@ -46,10 +46,10 @@ public class UserPostgresRepository implements IUserRepository {
 
 	@Override
 	public List<User> findAll() {
-		String query = "SELECT  * FROM users";
+		String query = "SELECT  * FROM users;";
 		List<User> users = new ArrayList<>();
 
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = userdataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
@@ -69,7 +69,7 @@ public class UserPostgresRepository implements IUserRepository {
 	public User find(UUID id) {
 		String query = "SELECT  * FROM users where id=" + id.toString() + ";";
 		User user = new User();
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = userdataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			user.setName(rs.getString("name"));
@@ -84,7 +84,7 @@ public class UserPostgresRepository implements IUserRepository {
 	@Override
 	public UUID save(User entity) {
 		String query = "Insert INTO USER(id,name)VALUES("+entity.getId().toString()+","+entity.getName()+");";
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = userdataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			stmt.executeQuery(query);
 			return entity.getId();
@@ -98,7 +98,7 @@ public class UserPostgresRepository implements IUserRepository {
 	public void update(User entity) {
 		String query = "UPDATE users SET name = " + entity.getName() + " WHERE id = " + entity.getId().toString() + ";";
 
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = userdataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			stmt.executeUpdate(query);
 		} catch (Exception e) {
@@ -112,7 +112,7 @@ public class UserPostgresRepository implements IUserRepository {
 	public void delete(User o) {
 		String query = "DELETE FROM users WHERE id = " + o.getId().toString() + " AND name = " + o.getName() + ";";
 
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = userdataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			stmt.executeUpdate(query);
 		} catch (Exception e) {
@@ -126,7 +126,7 @@ public class UserPostgresRepository implements IUserRepository {
 	public void remove(Long id) {
 		String query = "DELETE FROM users WHERE id = " + id + ";";
 
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = userdataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			stmt.executeUpdate(query);
 		} catch (Exception e) {
@@ -137,7 +137,7 @@ public class UserPostgresRepository implements IUserRepository {
 	}
 
 	@Bean
-	public DataSource dataSource() throws SQLException {
+	public DataSource userdataSource() throws SQLException {
 		if (dbUrl == null || dbUrl.isEmpty()) {
 			return new HikariDataSource();
 		} else {

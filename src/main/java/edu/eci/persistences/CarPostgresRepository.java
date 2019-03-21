@@ -25,14 +25,14 @@ public class CarPostgresRepository implements ICarRepository {
 	private String dbUrl = System.getenv().get("JDBC_DATABASE_URL");
 
 	@Autowired
-	private DataSource dataSource;
+	private DataSource carDataSource;
 
 	@Override
 	public Car getCarByLicence(String licensePlate) {
 		String query = "SELECT * FORM cars WHERE licensePlate = " + licensePlate + ";";
 		Car car = new Car();
 
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = carDataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			car.setLicencePlate(rs.getString("licensePlate"));
@@ -50,7 +50,7 @@ public class CarPostgresRepository implements ICarRepository {
 		String query = "SELECT * FROM cars;";
 		List<Car> cars = new ArrayList<>();
 
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = carDataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
@@ -72,7 +72,7 @@ public class CarPostgresRepository implements ICarRepository {
 		String query = "SELECT  * FROM Cars where id=" + id.toString() + ";";
 		Car car = new Car();
 
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = carDataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			car.setLicencePlate(rs.getString("licensePlate"));
@@ -89,7 +89,7 @@ public class CarPostgresRepository implements ICarRepository {
 	public UUID save(Car entity) {
 		String query = "INSERT INTO cars(id, licensePlate, brand) VALUES (" + entity.getId().toString() + ","
 				+ entity.getLicencePlate() + "," + entity.getBrand() + ");";
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = carDataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			stmt.executeQuery(query);
 			return entity.getId();
@@ -104,7 +104,7 @@ public class CarPostgresRepository implements ICarRepository {
 		String query = "UPDATE cars SET licensePlate = " + entity.getLicencePlate() + " AND brand = "
 				+ entity.getBrand() + " WHERE id = " + entity.getId().toString() + ";";
 
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = carDataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			stmt.executeQuery(query);
 		} catch (Exception e) {
@@ -119,7 +119,7 @@ public class CarPostgresRepository implements ICarRepository {
 		String query = "DELETE FROM users WHERE id = " + o.getId().toString() + " AND licensePlate = "
 				+ o.getLicencePlate() + " AND brand = " + o.getBrand() + ";";
 
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = carDataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			stmt.executeUpdate(query);
 		} catch (Exception e) {
@@ -133,7 +133,7 @@ public class CarPostgresRepository implements ICarRepository {
 	public void remove(Long id) {
 		String query = "DELETE FROM Car WHERE id = " + id + ";";
 
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = carDataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			stmt.executeUpdate(query);
 		} catch (Exception e) {
@@ -144,7 +144,7 @@ public class CarPostgresRepository implements ICarRepository {
 	}
 
 	@Bean
-	public DataSource dataSource() throws SQLException {
+	public DataSource carDataSource() throws SQLException {
 		if (dbUrl == null || dbUrl.isEmpty()) {
 			return new HikariDataSource();
 		} else {
