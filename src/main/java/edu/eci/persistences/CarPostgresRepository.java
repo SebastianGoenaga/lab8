@@ -2,11 +2,10 @@ package edu.eci.persistences;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import edu.eci.models.User;
-import edu.eci.persistences.repositories.IUserRepository;
+import edu.eci.models.Car;
+import edu.eci.persistences.repositories.ICarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -20,24 +19,26 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-@Qualifier("UserPostgresRepository")
-public class UserPostgresRepository implements IUserRepository {
+@Qualifier("CarPostgresRepository")
+public class CarPostgresRepository implements ICarRepository {
 
-	private String dbUrl = System.getenv().get("JDBC_DATABASE_URL");;
+	private String dbUrl = System.getenv().get("JDBC_DATABASE_URL");
 
 	@Autowired
 	private DataSource dataSource;
 
 	@Override
-	public User getUserByUserName(String userName) {
-		String query = "SELECT  * FROM users where name=" + userName + ";";
-		User user = new User();
+	public Car getCarByLicence(String licensePlate) {
+		String query = "SELECT * FORM cars WHERE licensePlate = " + licensePlate + ";";
+		Car car = new Car();
+
 		try (Connection connection = dataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
-			user.setName(rs.getString("name"));
-			user.setId(UUID.fromString(rs.getString("id")));
-			return user;
+			car.setLicencePlate(rs.getString("licensePlate"));
+			car.setBrand(rs.getString("brand"));
+			car.setId(UUID.fromString(rs.getString("id")));
+			return car;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			throw new RuntimeException(e);
@@ -45,20 +46,21 @@ public class UserPostgresRepository implements IUserRepository {
 	}
 
 	@Override
-	public List<User> findAll() {
-		String query = "SELECT  * FROM users";
-		List<User> users = new ArrayList<>();
+	public List<Car> findAll() {
+		String query = "SELECT * FROM cars;";
+		List<Car> cars = new ArrayList<>();
 
 		try (Connection connection = dataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
-				User user = new User();
-				user.setName(rs.getString("name"));
-				user.setId(UUID.fromString(rs.getString("id")));
-				users.add(user);
+				Car car = new Car();
+				car.setLicencePlate(rs.getString("licensePlate"));
+				car.setBrand(rs.getString("brand"));
+				car.setId(UUID.fromString(rs.getString("id")));
+				cars.add(car);
 			}
-			return users;
+			return cars;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			throw new RuntimeException(e);
@@ -66,15 +68,17 @@ public class UserPostgresRepository implements IUserRepository {
 	}
 
 	@Override
-	public User find(UUID id) {
-		String query = "SELECT  * FROM users where id=" + id.toString() + ";";
-		User user = new User();
+	public Car find(UUID id) {
+		String query = "SELECT  * FROM Cars where id=" + id.toString() + ";";
+		Car car = new Car();
+
 		try (Connection connection = dataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
-			user.setName(rs.getString("name"));
-			user.setId(UUID.fromString(rs.getString("id")));
-			return user;
+			car.setLicencePlate(rs.getString("licensePlate"));
+			car.setBrand(rs.getString("brand"));
+			car.setId(UUID.fromString(rs.getString("id")));
+			return car;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			throw new RuntimeException(e);
@@ -82,8 +86,9 @@ public class UserPostgresRepository implements IUserRepository {
 	}
 
 	@Override
-	public UUID save(User entity) {
-		String query = "Insert INTO USER(id,name)VALUES("+entity.getId().toString()+","+entity.getName()+");";
+	public UUID save(Car entity) {
+		String query = "INSERT INTO cars(id, licensePlate, brand) VALUES (" + entity.getId().toString() + ","
+				+ entity.getLicencePlate() + "," + entity.getBrand() + ");";
 		try (Connection connection = dataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
 			stmt.executeQuery(query);
@@ -95,12 +100,13 @@ public class UserPostgresRepository implements IUserRepository {
 	}
 
 	@Override
-	public void update(User entity) {
-		String query = "UPDATE users SET name = " + entity.getName() + " WHERE id = " + entity.getId().toString() + ";";
+	public void update(Car entity) {
+		String query = "UPDATE cars SET licensePlate = " + entity.getLicencePlate() + " AND brand = "
+				+ entity.getBrand() + " WHERE id = " + entity.getId().toString() + ";";
 
 		try (Connection connection = dataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
-			stmt.executeUpdate(query);
+			stmt.executeQuery(query);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			throw new RuntimeException(e);
@@ -109,8 +115,9 @@ public class UserPostgresRepository implements IUserRepository {
 	}
 
 	@Override
-	public void delete(User o) {
-		String query = "DELETE FROM users WHERE id = " + o.getId().toString() + " AND name = " + o.getName() + ";";
+	public void delete(Car o) {
+		String query = "DELETE FROM users WHERE id = " + o.getId().toString() + " AND licensePlate = "
+				+ o.getLicencePlate() + " AND brand = " + o.getBrand() + ";";
 
 		try (Connection connection = dataSource.getConnection()) {
 			Statement stmt = connection.createStatement();
@@ -124,7 +131,7 @@ public class UserPostgresRepository implements IUserRepository {
 
 	@Override
 	public void remove(Long id) {
-		String query = "DELETE FROM users WHERE id = " + id + ";";
+		String query = "DELETE FROM Car WHERE id = " + id + ";";
 
 		try (Connection connection = dataSource.getConnection()) {
 			Statement stmt = connection.createStatement();

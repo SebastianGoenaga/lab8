@@ -8,8 +8,15 @@ import java.util.UUID;
 
 @Service
 public interface IUserServices {
-    List<User> list();
-    User create(User user);
-    User get(UUID id);
-    User get(String name);
+	List<User> list();
+
+	User create(User user);
+
+	User get(UUID id);
+
+	User get(String name);
+
+	void update(User user);
+
+	void delete(User user);
 }
