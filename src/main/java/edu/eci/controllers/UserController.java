@@ -19,10 +19,19 @@ public class UserController {
 	private IUserServices userServices;
 
 	@ResponseBody
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(value = "/useri",method = RequestMethod.GET)
 	public ResponseEntity<?> getUser() {
 		try {
 			return new ResponseEntity<>(userServices.list(), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getStackTrace(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	@ResponseBody
+	@RequestMapping(value = "/user",method = RequestMethod.GET)
+	public ResponseEntity<?> getUser(@RequestParam UUID id) {
+		try {
+			return new ResponseEntity<>(userServices.get(id), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.getStackTrace(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
