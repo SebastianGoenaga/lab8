@@ -42,19 +42,19 @@ For more information about using Java on Heroku, see these Dev Center articles:
 
 # lab 8
 ## Prepare the app
-
- - foto
+ - ![foto](13.png)
+ - ![foto](3.png)
  - The aplication run a heroku website
  - The rest services that this website use are GET POST PUT and DELETE and they are used to create services between user and carts through a local repository and a database. 
  -Is the file that heroku uses to run, this file contains an executable `web: java -jar target/heroku-lab-1.0.jar` 
 ## Deploy the app
- - foto
- - foto
- - foto
- - foto
+ - ![foto](5.png)
+ - ![foto](4.png)
+ - ![foto](6.png)
+ - ![foto](7.png)
  ## View logs
- - foto
+ - ![foto](14.png)
  ## Use a database
- - foto
- - foto
- - foto
+ - ![foto](10.png)
+ - ![foto](11.png)
+ - ![foto](12.png)
